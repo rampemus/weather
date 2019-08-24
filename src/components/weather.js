@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import Metolib from '@fmidev/metolib'
+import Today from './weather/todayPanel.js'
+import WeekPanel from './weather/weekPanel.js'
+import './weather.css'
 
 const Weather = (props) => {
 
-    const [todayForecast, setTodayForecast] = useState([])
-    const [weekForecast, setWeekForecast] = useState([])
+    const [forecast, setForecast] = useState([])
 
     useEffect(()=> {
+        //TODO:mock server instead of normal query
         const SERVER_URL = 'http://opendata.fmi.fi/wfs'
         //
         //fmi::observations::weather::multipointcoverage
@@ -17,34 +20,18 @@ const Weather = (props) => {
             // Connection was properly initialized. So, get the data.
 
             //GeopHeight,Temperature,Pressure,Humidity,WindDirection,WindSpeedMS,WindUMS,WindVMS,MaximumWind,WindGust,DewPoint,TotalCloudCover,WeatherSymbol3,LowCloudCover,MediumCloudCover,HighCloudCover,Precipitation1h,PrecipitationAmount,RadiationGlobalAccumulation,RadiationLWAccumulation,RadiationNetSurfaceLWAccumulation,RadiationNetSurfaceSWAccumulation,RadiationDiffuseAccumulation,LandSeaMask
-            connection.getData({
-                requestParameter: 'Temperature,Humidity,WindDirection,WindSpeedMS',
-                begin: new Date(),
-                end: new Date(new Date().getTime() + 24*60*60*1000),//1 368 352 800 000
-                timestep: 60 * 60 * 1000,
-                sites: 'Helsinki',
-                callback: function(data, errors) {
-                    // Handle the data and errors object in a way you choose.
-                    setTodayForecast(data)
-                    console.log('todayForecast: ', data)
-                    if ( errors ) {
-                        console.log(errors)
-                    }
-                    // Disconnect because the flow has finished.
-                    connection.disconnect()
-                }
-            })
 
             connection.getData({
                 requestParameter: 'Temperature,Humidity,WindDirection,WindSpeedMS',
                 begin: new Date(),
                 end: new Date(new Date().getTime() + 7*24*60*60*1000),//1 368 352 800 000
                 timestep: 60 * 60 * 1000,
-                sites: 'Helsinki',
+                sites: props.location,
                 callback: function(data, errors) {
                     // Handle the data and errors object in a way you choose.
-                    setWeekForecast(data)
-                    console.log('weekForecast: ', data)
+                    setForecast(data)
+                    console.log('forecast: ', JSON.stringify(data))
+                    console.log(JSON.stringify({apple:1}))
                     if ( errors ) {
                         console.log(errors)
                     }
@@ -56,8 +43,9 @@ const Weather = (props) => {
 
     }, [props.location])
 
-    return <div>
-        {props.location} is sunny today!
+    return <div className='weatherPanel'>
+        <Today className='weatherPanelItem'/>
+        <WeekPanel className='weatherPanelItem'/>
     </div>
 }
 
