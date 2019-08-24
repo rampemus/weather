@@ -1,6 +1,7 @@
 .weatherPanel {
   background-color: #F0F0F0;
-  padding: 10px;
+  padding: 0px;
+  padding-bottom: 20px;
   margin: 30px;
   border-radius: 10px;
   display: flex;
@@ -17,6 +18,7 @@
 .todayPanel {
   padding: 10px;
   margin: 20px;
+  margin-bottom: 0px;
   border-radius: 7px;
 }
 
