@@ -10,7 +10,7 @@ function App() {
         <div className="App">
             Hello {city}!
             <Weather
-                location={city}
+                initLocation={city}
             />
         </div>
     );
