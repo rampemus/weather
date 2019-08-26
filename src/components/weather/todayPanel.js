@@ -1,12 +1,74 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './graphics.css'
 
 const Today = (props) => {
 
+    const [data, setData] = useState({
+        temperature: [0,0,0],
+        windSpeed:[0,0,0],
+        humidity:[0,0,0]
+    })
+
+    useEffect(()=> {
+        //data extraction tools
+        const getTemperatureSeries = (forecast,now,endOfDay) => {
+            console.log('timeStamp' + new Date(now) + 'endOfDay' + new Date(endOfDay))
+            let result = []
+            const valuePairs = forecast.locations[0].data.Temperature.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( now < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+        const getWindSpeedSeries = (forecast,now,endOfDay) => {
+            console.log(forecast.locations[0].data)
+            let result = []
+            const valuePairs = forecast.locations[0].data.WindSpeedMS.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( now < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+        const getHumiditySeries = (forecast,now,endOfDay) => {
+            let result = []
+            const valuePairs = forecast.locations[0].data.Humidity.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( now < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+
+        if (props.data.locations) {
+            const now = new Date()
+            const GMT = 3
+            const AM = 6 - GMT
+            const endOfDay = new Date( now.valueOf() - now.valueOf()%(1000*60*60*24) + 1000*60*60*AM + 1000*60*60*24 )
+            setData({
+                temperature: getTemperatureSeries(props.data,now,endOfDay),
+                windSpeed: getWindSpeedSeries(props.data,now,endOfDay),
+                humidity:getHumiditySeries(props.data,now,endOfDay)
+            })
+        }
+
+    }, [props.data])
+    // console.log('getTodayData', result)
+
     //Series are array of becoming temperatures for every hour
-    const tSeries = props.data.temperature
-    const hSeries = props.data.humidity
-    const wSeries = props.data.windSpeed
+    const tSeries = data.temperature
+    const hSeries = data.humidity
+    const wSeries = data.windSpeed
 
     const bgColor = 'lightblue'
 

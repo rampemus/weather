@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import Weather from './components/weather'
 import './App.css'
 
 function App() {
 
-    const [city, setCity] = useState('Helsinki')
+    const city = 'Helsinki'
 
-    if ( city ) {
-        return (
-            <div className="App">
-                Hello {city}!
-                <Weather
-                    initLocation={city}
-                />
-            </div>
-        )
-    } else {
-        return (
-            <div className="App">
-                Initial city name missing.
-            </div>
-        )
-    }
+    return (
+        <div className="App">
+            Hello {city}!
+            <Weather
+                initLocation={city}
+            />
+        </div>
+    )
+
 }
 
 export default App

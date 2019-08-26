@@ -1,30 +1,23 @@
-const Metolib = require('@fmidev/metolib')
-const axios = require('axios')
+import axios from 'axios'
+import Metolib from '@fmidev/metolib'
 
-const forecast3Days = (location) => {
-    let result = ''
-
-    //TODO:mock server instead of normal query
+const forecast3Days = location => {
     let SERVER_URL = 'http://opendata.fmi.fi/wfs'
     if ( process.env.NODE_ENV !== "production" ) {
-        //uses local mock address
-        SERVER_URL = '/wfs/' + location
-
-        const request = axios.get(SERVER_URL)
+        SERVER_URL = '/wfs'
+        const request = axios.get(SERVER_URL + '/'+ location)
         return request.then(response => response.data)
-
-
     } else {
+
+        //this does not work. It will produce a promise that useEffect cannot handle
 
         //fmi::observations::weather::multipointcoverage
         const STORED_QUERY_OBSERVATION = 'fmi::forecast::harmonie::hybrid::point::multipointcoverage'
 
+        console.log('ready to fetch')
         let connection = new Metolib.WfsConnection()
         if (connection.connect(SERVER_URL, STORED_QUERY_OBSERVATION)) {
             // Connection was properly initialized. So, get the data.
-
-            //GeopHeight,Temperature,Pressure,Humidity,WindDirection,WindSpeedMS,WindUMS,WindVMS,MaximumWind,WindGust,DewPoint,TotalCloudCover,WeatherSymbol3,LowCloudCover,MediumCloudCover,HighCloudCover,Precipitation1h,PrecipitationAmount,RadiationGlobalAccumulation,RadiationLWAccumulation,RadiationNetSurfaceLWAccumulation,RadiationNetSurfaceSWAccumulation,RadiationDiffuseAccumulation,LandSeaMask
-
             connection.getData({
                 requestParameter: 'Temperature,Humidity,WindDirection,WindSpeedMS',
                 begin: new Date(),
@@ -33,7 +26,7 @@ const forecast3Days = (location) => {
                 sites: location,
                 callback: function(data, errors) {
                     // Handle the data and errors object in a way you choose.
-                    console.log('forecast: ', JSON.stringify(data))
+                    console.log('there is info ', JSON.stringify(data))
                     if ( errors ) {
                         console.log(errors)
                     }
@@ -45,8 +38,10 @@ const forecast3Days = (location) => {
             })
         }
     }
-
-
 }
 
-module.exports = forecast3Days
+
+
+export default {
+    forecast3Days
+}

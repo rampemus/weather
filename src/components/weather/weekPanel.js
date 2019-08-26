@@ -1,10 +1,87 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Day from './dayPanel'
 
 const WeekPanel = (props) => {
 
-    const tomorrow = props.data[0]
-    const theDayAfter = props.data[1]
+
+    const [data, setData] = useState([
+        {
+            temperature: [0,0,0],
+            windSpeed:[0,0,0],
+            humidity:[0,0,0]
+        },
+        {
+            temperature: [0,0,0],
+            windSpeed:[0,0,0],
+            humidity:[0,0,0]
+        }
+    ])
+
+    useEffect(() => {
+        //data extraction tools
+        const getTemperatureSeries = (forecast,startOfDay,endOfDay) => {
+            console.log('timeStamp' + new Date(startOfDay) + 'endOfDay' + new Date(endOfDay))
+            let result = []
+            const valuePairs = forecast.locations[0].data.Temperature.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( startOfDay < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+        const getWindSpeedSeries = (forecast,startOfDay,endOfDay) => {
+            console.log(forecast.locations[0].data)
+            let result = []
+            const valuePairs = forecast.locations[0].data.WindSpeedMS.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( startOfDay < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+        const getHumiditySeries = (forecast,startOfDay,endOfDay) => {
+            let result = []
+            const valuePairs = forecast.locations[0].data.Humidity.timeValuePairs
+            for ( let i = 0; i < valuePairs.length; i++) {
+                let timeStamp = new Date(valuePairs[i].time)
+                if ( startOfDay < timeStamp && timeStamp < endOfDay) {
+
+                    result.push(valuePairs[i].value)
+                }
+            }
+            return result
+        }
+
+        if (props.data.locations) {
+            const now = new Date()
+            const GMT = 3
+            //tomorrow morning 0 am
+            const startOfDay = new Date( now.valueOf() - now.valueOf()%(1000*60*60*24) + 1000*60*60*24*1 - 1000*60*60*GMT )
+            const endOfDay = new Date(startOfDay.valueOf() + 1000*60*60*24)
+            const endOfSecondDay = new Date(endOfDay.valueOf() + 1000*60*60*24)
+            setData([
+                {
+                    temperature: getTemperatureSeries(props.data,startOfDay,endOfDay),
+                    windSpeed: getWindSpeedSeries(props.data,startOfDay,endOfDay), humidity:getHumiditySeries(props.data,startOfDay,endOfDay)
+                },
+                {
+                    temperature: getTemperatureSeries(props.data,endOfDay,endOfSecondDay),
+                    windSpeed: getWindSpeedSeries(props.data,endOfDay,endOfSecondDay), humidity:getHumiditySeries(props.data,endOfDay,endOfSecondDay)
+                }
+            ])
+        }
+
+    },[props.data])
+
+
+    const tomorrow = data[0]
+    const theDayAfter = data[1]
 
     const weekdays =  ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     const tomorrowName = weekdays[new Date().getDay()+1]

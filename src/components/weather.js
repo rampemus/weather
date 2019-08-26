@@ -1,66 +1,63 @@
 import React, { useState, useEffect } from 'react'
-import forecast3Days from '../services/forecast3Days'
+import forecastService from '../services/forecastService'
+import Metolib from '@fmidev/metolib'
 import Today from './weather/todayPanel.js'
 import WeekPanel from './weather/weekPanel.js'
-import {getTemperatureSeries, getWindSpeedSeries, getHumiditySeries } from '../utils/valueSeriesHelper'
 import './weather.css'
 
 const Weather = (props) => {
 
     const [location, setLocation] = useState(props.initLocation)
-    const [forecast, setForecast] = useState()
+    const [forecast, setForecast] = useState([])
 
     useEffect(()=> {
         if ( process.env.NODE_ENV !== "production" ) {
-            forecast3Days(location)
+            forecastService.forecast3Days(location)
                 .then(newData => {
                     setForecast(newData)
                 })
         } else {
-            setForecast(forecast3Days(location))
+            const SERVER_URL = 'http://opendata.fmi.fi/wfs'
+	        //
+	        //fmi::observations::weather::multipointcoverage
+	        const STORED_QUERY_OBSERVATION = 'fmi::forecast::harmonie::hybrid::point::multipointcoverage'
+
+	        let connection = new Metolib.WfsConnection()
+	        if (connection.connect(SERVER_URL, STORED_QUERY_OBSERVATION)) {
+	            // Connection was properly initialized. So, get the data.
+                console.log('end of forecast: ',new Date(new Date().valueOf() + 3*24*60*60*1000))
+	            //GeopHeight,Temperature,Pressure,Humidity,WindDirection,WindSpeedMS,WindUMS,WindVMS,MaximumWind,WindGust,DewPoint,TotalCloudCover,WeatherSymbol3,LowCloudCover,MediumCloudCover,HighCloudCover,Precipitation1h,PrecipitationAmount,RadiationGlobalAccumulation,RadiationLWAccumulation,RadiationNetSurfaceLWAccumulation,RadiationNetSurfaceSWAccumulation,RadiationDiffuseAccumulation,LandSeaMask
+	            connection.getData({
+	                requestParameter: 'Temperature,Humidity,WindDirection,WindSpeedMS',
+	                begin: new Date(),
+	                end: new Date(new Date().valueOf() + 3*24*60*60*1000),//1 368 352 800 000
+	                timestep: 60 * 60 * 1000,
+	                sites: 'Helsinki',
+	                callback: function(data, errors) {
+	                    // Handle the data and errors object in a way you choose.
+	                    setForecast(data)
+	                    console.log('todayForecast: ', data)
+	                    if ( errors ) {
+	                        console.log(errors)
+	                    }
+	                    // Disconnect because the flow has finished.
+	                    connection.disconnect()
+	                }
+	            })
+            }
         }
+
     }, [location])
 
     const handleLocationChange = (event) => {
         setLocation(event.target.value)
     }
 
-    //returns series of temperature, humidity and windspeed for the rest of the day
-    const getTodayData = (forecast) => {
-        const now = new Date()
-        //tomorrows morning 6 am
-        const GMT = 3
-        const AM = 6 - GMT
-        const endOfDay = new Date( now.valueOf() - now.valueOf()%(1000*60*60*24) + 1000*60*60*AM + 1000*60*60*24 )
-        // console.log('from: ' + now + ' to: ' + endOfDay)
-        const result = { temperature: getTemperatureSeries(forecast,now,endOfDay), windSpeed: getWindSpeedSeries(forecast,now,endOfDay), humidity:getHumiditySeries(forecast,now,endOfDay) }
-        // console.log('getTodayData', result)
-        return result
-    }
-
-    //returns series of temperature, humidity and windspeed for the selected dayNumber 0=today, 1=tomorrow, 2=the day after
-    const getDayData = (forecast, dayNumber) => {
-        const now = new Date()
-        //tomorrow morning 0 am
-        const GMT = 3
-        const startOfDay = new Date( now.valueOf() - now.valueOf()%(1000*60*60*24) + 1000*60*60*24*dayNumber - 1000*60*60*GMT )
-        const endOfDay = new Date(startOfDay.valueOf() + 1000*60*60*24)
-        const result = { temperature: getTemperatureSeries(forecast,startOfDay,endOfDay), windSpeed: getWindSpeedSeries(forecast,startOfDay,endOfDay), humidity:getHumiditySeries(forecast,startOfDay,endOfDay) }
-        return result
-    }
-
-    //returns multiple series of temperature, humidity and windspeed for the following days
-    const getWeekData = (forecast) => {
-        console.log('forecast?',forecast)
-        const result = [getDayData(forecast,1),getDayData(forecast,2)]
-        return result
-    }
-
     return <div className='weatherContainer'>
         <input type='text' onChange={handleLocationChange} value={location} className='textInput'/>
             <div className='weatherPanel'>
-                <Today className='weatherPanelItem' data={getTodayData(forecast)}/>
-                <WeekPanel className='weatherPanelItem' data={getWeekData(forecast)}/>
+                <Today className='weatherPanelItem' data={forecast}/>
+                <WeekPanel className='weatherPanelItem' data={forecast}/>
             </div>
         </div>
 }
