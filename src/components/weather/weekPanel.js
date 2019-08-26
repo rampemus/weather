@@ -20,7 +20,7 @@ const WeekPanel = (props) => {
     useEffect(() => {
         //data extraction tools
         const getTemperatureSeries = (forecast,startOfDay,endOfDay) => {
-            console.log('timeStamp' + new Date(startOfDay) + 'endOfDay' + new Date(endOfDay))
+            // console.log('timeStamp' + new Date(startOfDay) + 'endOfDay' + new Date(endOfDay))
             let result = []
             const valuePairs = forecast.locations[0].data.Temperature.timeValuePairs
             for ( let i = 0; i < valuePairs.length; i++) {
@@ -28,12 +28,13 @@ const WeekPanel = (props) => {
                 if ( startOfDay < timeStamp && timeStamp < endOfDay) {
 
                     result.push(valuePairs[i].value)
+                    console.log(timeStamp + valuePairs[i].value)
                 }
             }
             return result
         }
         const getWindSpeedSeries = (forecast,startOfDay,endOfDay) => {
-            console.log(forecast.locations[0].data)
+            // console.log(forecast.locations[0].data)
             let result = []
             const valuePairs = forecast.locations[0].data.WindSpeedMS.timeValuePairs
             for ( let i = 0; i < valuePairs.length; i++) {

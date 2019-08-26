@@ -14,7 +14,7 @@ const forecast3Days = location => {
         //fmi::observations::weather::multipointcoverage
         const STORED_QUERY_OBSERVATION = 'fmi::forecast::harmonie::hybrid::point::multipointcoverage'
 
-        console.log('ready to fetch')
+        // console.log('ready to fetch')
         let connection = new Metolib.WfsConnection()
         if (connection.connect(SERVER_URL, STORED_QUERY_OBSERVATION)) {
             // Connection was properly initialized. So, get the data.
@@ -26,9 +26,9 @@ const forecast3Days = location => {
                 sites: location,
                 callback: function(data, errors) {
                     // Handle the data and errors object in a way you choose.
-                    console.log('there is info ', JSON.stringify(data))
+                    // console.log('there is info ', JSON.stringify(data))
                     if ( errors ) {
-                        console.log(errors)
+                        // console.log(errors)
                     }
                     // Disconnect because the flow has finished.
                     connection.disconnect()
