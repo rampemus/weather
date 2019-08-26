@@ -6,14 +6,22 @@ function App() {
 
     const [city, setCity] = useState('Helsinki')
 
-    return (
-        <div className="App">
-            Hello {city}!
-            <Weather
-                initLocation={city}
-            />
-        </div>
-    );
+    if ( city ) {
+        return (
+            <div className="App">
+                Hello {city}!
+                <Weather
+                    initLocation={city}
+                />
+            </div>
+        )
+    } else {
+        return (
+            <div className="App">
+                Initial city name missing.
+            </div>
+        )
+    }
 }
 
 export default App

@@ -10,11 +10,8 @@ const forecast3Days = (location) => {
         //uses local mock address
         SERVER_URL = '/wfs/' + location
 
-        axios.get(SERVER_URL)
-            .then(response => {
-                // console.log('forecast: ', JSON.stringify(response.data))
-                result = response.data
-            })
+        const request = axios.get(SERVER_URL)
+        return request.then(response => response.data)
 
 
     } else {
@@ -36,19 +33,20 @@ const forecast3Days = (location) => {
                 sites: location,
                 callback: function(data, errors) {
                     // Handle the data and errors object in a way you choose.
-                    result = data
                     console.log('forecast: ', JSON.stringify(data))
                     if ( errors ) {
                         console.log(errors)
                     }
                     // Disconnect because the flow has finished.
                     connection.disconnect()
+
+                    return data
                 }
             })
         }
     }
 
-    return result
+
 }
 
 module.exports = forecast3Days

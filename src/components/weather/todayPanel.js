@@ -12,7 +12,6 @@ const Today = (props) => {
 
     const average = (array) => {return array.reduce(function(a, b) { return a + b; })}
 
-
     const tMax = Math.round(Math.max.apply(Math, tSeries))
     const tMin = Math.round(Math.min.apply(Math, tSeries))
     const h = Math.round(average(hSeries)/hSeries.length) + ' %'

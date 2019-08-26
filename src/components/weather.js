@@ -8,10 +8,17 @@ import './weather.css'
 const Weather = (props) => {
 
     const [location, setLocation] = useState(props.initLocation)
-    const [forecast, setForecast] = useState([])
+    const [forecast, setForecast] = useState()
 
     useEffect(()=> {
-        setForecast(() => forecast3Days(location))
+        if ( process.env.NODE_ENV !== "production" ) {
+            forecast3Days(location)
+                .then(newData => {
+                    setForecast(newData)
+                })
+        } else {
+            setForecast(forecast3Days(location))
+        }
     }, [location])
 
     const handleLocationChange = (event) => {
@@ -44,6 +51,7 @@ const Weather = (props) => {
 
     //returns multiple series of temperature, humidity and windspeed for the following days
     const getWeekData = (forecast) => {
+        console.log('forecast?',forecast)
         const result = [getDayData(forecast,1),getDayData(forecast,2)]
         return result
     }
