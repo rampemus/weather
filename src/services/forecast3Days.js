@@ -1,4 +1,5 @@
 const Metolib = require('@fmidev/metolib')
+const axios = require('axios')
 
 const forecast3Days = (location) => {
     let result = ''
@@ -7,12 +8,15 @@ const forecast3Days = (location) => {
     let SERVER_URL = 'http://opendata.fmi.fi/wfs'
     if ( process.env.NODE_ENV !== "production" ) {
         //uses local mock address
-        SERVER_URL = '/wfs'
+        SERVER_URL = '/wfs/' + location
 
-        const data = {info: 'mockData'}
+        axios.get(SERVER_URL)
+            .then(response => {
+                // console.log('forecast: ', JSON.stringify(response.data))
+                result = response.data
+            })
 
-        result = data
-        console.log('forecast: ', JSON.stringify(data))
+
     } else {
 
         //fmi::observations::weather::multipointcoverage
