@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getTemperatureSeries,getWindSpeedSeries,getHumiditySeries } from '../../utils/valueSeriesHelper'
+import { getTomorrowWeekdayName,getDayAfterTomorrowWeekdayName } from '../../utils/weekDayHelper'
 import Day from './dayPanel'
 
 const WeekPanel = (props) => {
@@ -19,7 +20,7 @@ const WeekPanel = (props) => {
     ])
 
     useEffect(() => {
-        
+
         if (props.data.locations) {
             const now = new Date()
             const GMT = 3
@@ -42,16 +43,15 @@ const WeekPanel = (props) => {
     },[props.data])
 
 
-    const tomorrow = data[0]
-    const theDayAfter = data[1]
+    const tomorrowData = data[0]
+    const theDayAfterData = data[1]
 
-    const weekdays =  ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const tomorrowName = weekdays[new Date().getDay()+1]
-    const theDayAfterName = weekdays[new Date().getDay()+2]
+    const tomorrowName = getTomorrowWeekdayName()
+    const theDayAfterName = getDayAfterTomorrowWeekdayName()
 
     return <div>
-        <Day weekdayName={tomorrowName} data={tomorrow}/>
-        <Day weekdayName={theDayAfterName} data={theDayAfter}/>
+        <Day weekdayName={tomorrowName} data={tomorrowData}/>
+        <Day weekdayName={theDayAfterName} data={theDayAfterData}/>
     </div>
 }
 
