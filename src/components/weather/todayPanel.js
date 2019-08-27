@@ -99,7 +99,7 @@ const Today = (props) => {
             <text x='80' y='30' className='textBig'></text>
 
             <text x='20' y='80' className='textMedium'>Wind {w}</text>
-            <text x='20' y='110' className='textMedium'>Humidity {h}</text>
+            <text x='20' y='110' className='textMedium' id='humidityText'>Humidity {h}</text>
 
         </svg>
     </div>
