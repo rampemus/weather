@@ -1,5 +1,15 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Installation
+
+In case you don't have node.js installed go visit https://nodejs.org/.
+
+Clone project and in project directory you might need to execute:
+
+`npm install`
+
+before you are able to run any scripts.
+
 ## Available Scripts
 
 In the project directory, you can run:
