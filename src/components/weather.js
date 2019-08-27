@@ -7,9 +7,21 @@ import './weather.css'
 
 const Weather = (props) => {
 
+    // const refreshInterval = 1000*60*60
+    const refreshInterval = 1000*60*60
+
     const [location, setLocation] = useState(props.initLocation)
+    const [refreshCycle, setRefreshCycle] = useState(1)
     const [inputColor, setInputColor] = useState('white') //'#e6ffe6'
     const [forecast, setForecast] = useState([])
+
+    //took the code from here: https://upmostly.com/tutorials/setinterval-in-react-components-using-hooks
+    useEffect(() => {
+        const interval = setInterval(() => {
+          setRefreshCycle(refreshCycle => refreshCycle + 1);
+        }, refreshInterval);
+        return () => clearInterval(interval);
+    }, [refreshInterval]);
 
     useEffect(()=> {
         if ( process.env.NODE_ENV !== "production" ) {
@@ -59,13 +71,14 @@ const Weather = (props) => {
             }
         }
 
-    }, [location])
+    }, [location,refreshCycle])
 
     const handleLocationChange = (event) => {
         setLocation(event.target.value)
     }
 
     return <div className='weatherContainer'>
+        {/* {refreshCycle} */}
         <input
             type='text'
             onChange={handleLocationChange}
