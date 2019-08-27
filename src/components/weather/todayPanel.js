@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { getTemperatureSeries,getWindSpeedSeries,getHumiditySeries } from '../../utils/valueSeriesHelper'
 import './graphics.css'
 
 const Today = (props) => {
@@ -10,46 +11,6 @@ const Today = (props) => {
     })
 
     useEffect(()=> {
-        //data extraction tools
-        const getTemperatureSeries = (forecast,now,endOfDay) => {
-            // console.log('timeStamp' + new Date(now) + 'endOfDay' + new Date(endOfDay))
-            let result = []
-            const valuePairs = forecast.locations[0].data.Temperature.timeValuePairs
-            for ( let i = 0; i < valuePairs.length; i++) {
-                let timeStamp = new Date(valuePairs[i].time)
-                if ( now < timeStamp && timeStamp < endOfDay) {
-
-                    result.push(valuePairs[i].value)
-                    console.log(timeStamp + valuePairs[i].value)
-                }
-            }
-            return result
-        }
-        const getWindSpeedSeries = (forecast,now,endOfDay) => {
-            // console.log(forecast.locations[0].data)
-            let result = []
-            const valuePairs = forecast.locations[0].data.WindSpeedMS.timeValuePairs
-            for ( let i = 0; i < valuePairs.length; i++) {
-                let timeStamp = new Date(valuePairs[i].time)
-                if ( now < timeStamp && timeStamp < endOfDay) {
-
-                    result.push(valuePairs[i].value)
-                }
-            }
-            return result
-        }
-        const getHumiditySeries = (forecast,now,endOfDay) => {
-            let result = []
-            const valuePairs = forecast.locations[0].data.Humidity.timeValuePairs
-            for ( let i = 0; i < valuePairs.length; i++) {
-                let timeStamp = new Date(valuePairs[i].time)
-                if ( now < timeStamp && timeStamp < endOfDay) {
-
-                    result.push(valuePairs[i].value)
-                }
-            }
-            return result
-        }
 
         if (props.data.locations) {
             const now = new Date()
