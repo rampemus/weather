@@ -73,7 +73,13 @@ const Today = (props) => {
 
     const bgColor = 'lightblue'
 
-    const average = (array) => {return array.reduce(function(a, b) { return a + b; })}
+    const average = (array) => {
+        if ( array.length > 0 ) {
+            return array.reduce(function(a, b) { return a + b; })
+        } else {
+            return 0
+        }
+    }
 
     const tMax = Math.round(Math.max.apply(Math, tSeries))
     const tMin = Math.round(Math.min.apply(Math, tSeries))
